@@ -12,6 +12,7 @@
             --duo-green: #58cc02;
             --duo-blue: #1cb0f6;
             --duo-orange: #ff9600;
+            --duo-purple: #ce82ff;
         }
 
         body {
@@ -19,6 +20,7 @@
             background-color: #f7f7f7;
             touch-action: manipulation;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .devanagari { font-family: 'Noto Sans Devanagari', sans-serif; }
@@ -32,14 +34,15 @@
 
         .active-tab {
             border-bottom: 4px solid var(--duo-green);
-            color: var(--duo-green);
+            color: var(--duo-green) !important;
         }
 
         #writing-canvas {
-            border: 4px dashed #ccc;
+            border: 4px dashed #ddd;
             background: white;
             cursor: crosshair;
             touch-action: none;
+            border-radius: 1.5rem;
         }
 
         .pulse {
@@ -52,10 +55,21 @@
             100% { transform: scale(1); }
         }
 
-        /* Help Modal Styles */
         .glass-overlay {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(8px);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
         }
     </style>
 </head>
@@ -64,42 +78,43 @@
     <!-- Top Navigation -->
     <nav class="bg-white border-b-2 border-gray-200 sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">ह</div>
+            <div class="w-10 h-10 bg-[#58cc02] rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-sm">ह</div>
             <h1 class="text-xl font-bold text-gray-700 hidden sm:block">Hindi Duo Jr.</h1>
         </div>
         <div class="flex gap-4">
             <div class="flex items-center gap-1 bg-orange-100 px-3 py-1 rounded-full border border-orange-200">
                 <span class="text-orange-500">🔥</span>
-                <span id="streak-count" class="font-bold text-orange-600">3</span>
+                <span id="streak-count" class="font-bold text-orange-600">5</span>
             </div>
             <div class="flex items-center gap-1 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
                 <span class="text-blue-500">💎</span>
-                <span id="gems-count" class="font-bold text-blue-600">120</span>
+                <span id="gems-count" class="font-bold text-blue-600">450</span>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-md mx-auto p-4 pb-24">
+    <main class="max-w-md mx-auto p-4 pb-32">
 
-        <!-- Word of the Day -->
-        <section id="wotd-section" class="bg-white rounded-3xl p-6 card-shadow mb-6 border-blue-400 border-t-8 relative">
+        <!-- Word of the Day Section -->
+        <section id="wotd-section" class="bg-white rounded-3xl p-6 card-shadow mb-6 border-blue-400 border-t-8 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-6xl opacity-10 rotate-12">🌟</div>
             <h2 class="text-blue-500 uppercase text-xs font-black tracking-widest mb-2">Word of the Day</h2>
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 id="wotd-hindi" class="devanagari text-4xl font-bold text-gray-800">पर्यावरण</h3>
-                    <p id="wotd-roman" class="text-gray-500 italic">Paryavaran</p>
+                    <h3 id="wotd-hindi" class="devanagari text-4xl font-bold text-gray-800">खगोलशास्त्र</h3>
+                    <p id="wotd-roman" class="text-gray-500 italic">Khagol-shastra</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="showHelp(currentWord)" class="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center btn-bounce border-2 border-gray-200 font-bold">?</button>
-                    <button onclick="speak('पर्यावरण')" class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center btn-bounce">
+                    <button onclick="showHelp(wotd)" class="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center btn-bounce border-2 border-gray-200 font-bold">?</button>
+                    <button onclick="speak('खगोलशास्त्र')" class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center btn-bounce shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                     </button>
                 </div>
             </div>
-            <div class="mt-4 p-3 bg-blue-50 rounded-xl">
-                <p class="text-blue-800 font-bold">Meaning: Environment</p>
-                <p class="text-gray-600 text-sm mt-1">हमें अपने पर्यावरण को साफ रखना चाहिए।</p>
+            <div class="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <p class="text-blue-800 font-bold">Meaning: Astronomy</p>
+                <p class="text-gray-600 text-sm mt-1">मुझे खगोलशास्त्र के बारे में पढ़ना पसंद है।</p>
             </div>
         </section>
 
@@ -111,25 +126,31 @@
     </main>
 
     <!-- Bottom Menu -->
-    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-2 flex justify-around">
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-3 flex justify-around items-center z-50">
         <button onclick="switchTab('listening')" class="flex flex-col items-center p-2 text-gray-400" id="tab-listening">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15.5 8.5a2.121 2.121 0 00-3 0l-4 4a2.121 2.121 0 000 3l4 4a2.121 2.121 0 003 0l4-4a2.121 2.121 0 000-3l-4-4z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15.5 8.5a2.121 2.121 0 00-3 0l-4 4a2.121 2.121 0 000 3l4 4a2.121 2.121 0 003 0l4-4a2.121 2.121 0 000-3l-4-4z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="text-[10px] mt-1 uppercase font-black">Listen</span>
         </button>
+        <button onclick="switchTab('reading')" class="flex flex-col items-center p-2 text-gray-400" id="tab-reading">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            <span class="text-[10px] mt-1 uppercase font-black">Read</span>
+        </button>
         <button onclick="switchTab('writing')" class="flex flex-col items-center p-2 text-gray-400" id="tab-writing">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
             <span class="text-[10px] mt-1 uppercase font-black">Write</span>
         </button>
         <button onclick="switchTab('speaking')" class="flex flex-col items-center p-2 text-gray-400" id="tab-speaking">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
             <span class="text-[10px] mt-1 uppercase font-black">Speak</span>
         </button>
     </footer>
 
     <!-- Help Modal -->
     <div id="help-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-6 glass-overlay">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-8 card-shadow border-4 border-blue-400">
-            <h3 class="text-2xl font-black text-blue-500 mb-4">Help Guide! 💡</h3>
+        <div class="bg-white w-full max-w-sm rounded-3xl p-8 card-shadow border-4 border-blue-400 animate-in zoom-in-95 duration-200">
+            <h3 class="text-2xl font-black text-blue-500 mb-4 flex items-center gap-2">
+                <span>💡</span> Helpful Hint!
+            </h3>
             <div id="help-content">
                 <!-- Dynamic help content -->
             </div>
@@ -139,70 +160,60 @@
 
     <!-- Win Modal -->
     <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-end justify-center z-[100] p-4">
-        <div class="bg-white w-full max-w-md rounded-t-3xl p-8 transform translate-y-0" id="modal-content">
+        <div class="bg-white w-full max-w-md rounded-t-3xl p-8 translate-y-full transition-transform duration-300" id="modal-panel">
             <div id="modal-status" class="text-center">
                 <div id="modal-icon" class="text-6xl mb-4">🎉</div>
-                <h2 id="modal-title" class="text-3xl font-black mb-2 text-green-600">Great Job!</h2>
-                <p id="modal-desc" class="text-gray-600 mb-8 font-bold">You earned +10 Gems</p>
-                <button onclick="closeModal()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl btn-bounce card-shadow" style="box-shadow: 0 6px 0px #3c8c00;">CONTINUE</button>
+                <h2 id="modal-title" class="text-3xl font-black mb-2 text-green-600 uppercase">Correct!</h2>
+                <p id="modal-desc" class="text-gray-600 mb-8 font-bold text-lg">You are a Hindi master!</p>
+                <button onclick="closeModal()" class="w-full bg-[#58cc02] text-white py-5 rounded-2xl font-black text-2xl btn-bounce shadow-lg" style="box-shadow: 0 6px 0px #3c8c00;">CONTINUE</button>
             </div>
         </div>
     </div>
 
     <script>
-        const advancedWords = [
-            { 
-                hindi: "सफलता", 
-                roman: "Safalta", 
-                english: "Success", 
-                example: "मेहनत से सफलता मिलती है।",
-                pronunciation: "Sa-phal-ta (Gentle 'ph' like in 'phone')",
-                definition: "Winning or achieving a goal you worked hard for."
-            },
-            { 
-                hindi: "परिश्रम", 
-                roman: "Parishram", 
-                english: "Hard work", 
-                example: "परिश्रम ही कुंजी है।",
-                pronunciation: "Pa-ri-shram (Roll the 'r' slightly)",
-                definition: "Putting in a lot of effort to do something difficult."
-            },
-            { 
-                hindi: "जिज्ञासा", 
-                roman: "Jigyasa", 
-                english: "Curiosity", 
-                example: "बच्चों में जिज्ञासा होती है।",
-                pronunciation: "Jig-yaa-saa (Strong 'J' sound)",
-                definition: "A strong desire to know or learn something new."
-            },
-            { 
-                hindi: "स्वतंत्रता", 
-                roman: "Swatantrata", 
-                english: "Independence", 
-                example: "भारत की स्वतंत्रता महत्वपूर्ण है।",
-                pronunciation: "Sva-tan-tra-ta",
-                definition: "The freedom to make your own choices and be free."
-            },
-            { 
-                hindi: "अनुभव", 
-                roman: "Anubhav", 
-                english: "Experience", 
-                example: "यह मेरा पहला अनुभव है।",
-                pronunciation: "A-nu-bhav (Gentle 'bh' sound)",
-                definition: "Knowledge or skill gained from doing things over time."
-            }
+        // Massive word list (divided by categories internally)
+        const wordLibrary = [
+            // Advanced & Academic
+            { hindi: "सफलता", roman: "Safalta", english: "Success", definition: "Achieving a goal you worked hard for.", pronunciation: "Sa-phal-ta" },
+            { hindi: "पर्यावरण", roman: "Paryavaran", english: "Environment", definition: "The nature and world around us.", pronunciation: "Par-ya-va-ran" },
+            { hindi: "जिज्ञासा", roman: "Jigyasa", english: "Curiosity", definition: "A strong desire to learn new things.", pronunciation: "Jig-yaa-saa" },
+            { hindi: "स्वतंत्रता", roman: "Swatantrata", english: "Independence", definition: "Being free to make your own choices.", pronunciation: "Swa-tan-tra-ta" },
+            { hindi: "अनुभव", roman: "Anubhav", english: "Experience", definition: "Knowledge gained from doing things.", pronunciation: "A-nu-bhav" },
+            { hindi: "महत्वपूर्ण", roman: "Mahatvapurn", english: "Important", definition: "Something that matters a lot.", pronunciation: "Ma-hat-va-poorn" },
+            { hindi: "प्रकृति", roman: "Prakriti", english: "Nature", definition: "The earth, trees, and animals.", pronunciation: "Pra-kri-ti" },
+            { hindi: "अनुशासन", roman: "Anushasan", english: "Discipline", definition: "Following rules and being organized.", pronunciation: "A-nu-shaa-san" },
+            { hindi: "कल्पना", roman: "Kalpana", english: "Imagination", definition: "Creating new ideas in your mind.", pronunciation: "Kal-pa-na" },
+            { hindi: "संस्कृति", roman: "Sanskriti", english: "Culture", definition: "The traditions of a group of people.", pronunciation: "San-skri-ti" },
+            { hindi: "खगोलशास्त्र", roman: "Khagol-shastra", english: "Astronomy", definition: "The study of stars and planets.", pronunciation: "Kha-gol-shaas-tra" },
+            { hindi: "ईमानदारी", roman: "Imandari", english: "Honesty", definition: "Telling the truth and being fair.", pronunciation: "Ee-maan-daa-ree" },
+            
+            // Animals & Nature
+            { hindi: "महासागर", roman: "Mahasagar", english: "Ocean", definition: "A very large body of salt water.", pronunciation: "Ma-haa-saa-gar" },
+            { hindi: "तितली", roman: "Titli", english: "Butterfly", definition: "A colorful flying insect.", pronunciation: "Tit-lee" },
+            { hindi: "हिमालय", roman: "Himalaya", english: "Himalayas", definition: "The great snowy mountains of India.", pronunciation: "Hi-maa-la-ya" },
+            { hindi: "अंतरिक्ष", roman: "Antariksh", english: "Space", definition: "The area outside Earth's atmosphere.", pronunciation: "An-ta-riksh" },
+            { hindi: "रेगिस्तान", roman: "Registan", english: "Desert", definition: "A dry, sandy place with little water.", pronunciation: "Re-gis-taan" },
+            
+            // Emotions & Values
+            { hindi: "प्रसन्नता", roman: "Prasannata", english: "Happiness", definition: "The feeling of being very happy.", pronunciation: "Pra-san-na-taa" },
+            { hindi: "साहस", roman: "Sahas", english: "Courage", definition: "Being brave when things are scary.", pronunciation: "Saa-has" },
+            { hindi: "दयालुता", roman: "Dayaluta", english: "Kindness", definition: "Being nice and helpful to others.", pronunciation: "Da-yaa-lu-taa" },
+            { hindi: "धैर्य", roman: "Dhairya", english: "Patience", definition: "Waiting calmly without getting upset.", pronunciation: "Dhai-rya" }
         ];
 
         let currentTab = 'listening';
-        let gems = 120;
-        let streak = 3;
-        let currentWord = advancedWords[0];
+        let gems = 450;
+        let streak = 5;
+        let currentWord = wordLibrary[0];
+        let wotd = wordLibrary[10]; // Khagolshastra
 
-        // Speech
+        // Text-to-Speech
         function speak(text) {
+            window.speechSynthesis.cancel(); // Stop current speech
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'hi-IN';
-            utterance.rate = 0.7;
+            utterance.rate = 0.8;
+            utterance.pitch = 1.1; // Kid-friendly pitch
             window.speechSynthesis.speak(utterance);
         }
 
@@ -214,81 +225,231 @@
         }
 
         function nextExercise() {
-            currentWord = advancedWords[Math.floor(Math.random() * advancedWords.length)];
+            // Pick a word different from current
+            let next;
+            do {
+                next = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
+            } while (next === currentWord);
+            
+            currentWord = next;
             renderContent();
         }
 
         function renderContent() {
             const container = document.getElementById('exercise-container');
-            
-            let helpBtn = `
-                <button onclick="showHelp(currentWord)" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center font-bold border-2 border-gray-200 btn-bounce">?</button>
-            `;
+            const helpBtn = `<button onclick="showHelp(currentWord)" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center font-bold border-2 border-gray-200 btn-bounce z-10 shadow-sm hover:bg-white">?</button>`;
 
-            if (currentTab === 'listening') {
-                container.innerHTML = `
-                    <div class="bg-white p-8 rounded-3xl card-shadow text-center relative">
-                        ${helpBtn}
-                        <div class="text-green-500 font-black mb-4 uppercase tracking-widest text-sm">Listen & Choose</div>
-                        <button onclick="speak('${currentWord.hindi}')" class="w-24 h-24 bg-green-500 text-white rounded-full mx-auto mb-8 pulse flex items-center justify-center shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-                        </button>
-                        <div class="grid grid-cols-1 gap-3">
-                            ${shuffleOptions(currentWord.english).map(opt => `
-                                <button onclick="checkAnswer('${opt}', '${currentWord.english}')" class="p-4 rounded-2xl border-2 border-gray-200 hover:bg-gray-50 font-bold text-gray-700 btn-bounce">${opt}</button>
-                            `).join('')}
+            let html = "";
+
+            switch(currentTab) {
+                case 'listening':
+                    html = `
+                        <div class="bg-white p-8 rounded-3xl card-shadow text-center relative animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            ${helpBtn}
+                            <div class="text-[#58cc02] font-black mb-6 uppercase tracking-widest text-sm">Listen & Tap</div>
+                            <button onclick="speak('${currentWord.hindi}')" class="w-28 h-28 bg-[#58cc02] text-white rounded-full mx-auto mb-10 pulse flex items-center justify-center shadow-xl border-b-8 border-[#3c8c00] active:border-b-0 active:translate-y-2 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                            </button>
+                            <div class="grid grid-cols-1 gap-4">
+                                ${generateMultipleChoice(currentWord.english).map(opt => `
+                                    <button onclick="checkAnswer('${opt}', '${currentWord.english}')" class="p-4 rounded-2xl border-2 border-gray-200 hover:border-[#1cb0f6] hover:bg-[#f0f9ff] font-bold text-gray-700 btn-bounce text-xl card-shadow bg-white">${opt}</button>
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-            } else if (currentTab === 'writing') {
-                container.innerHTML = `
-                    <div class="bg-white p-6 rounded-3xl card-shadow text-center relative">
-                        ${helpBtn}
-                        <div class="text-orange-500 font-black mb-2 uppercase tracking-widest text-sm">Write This Word</div>
-                        <h2 class="devanagari text-5xl font-bold mb-4 text-gray-800">${currentWord.hindi}</h2>
-                        <canvas id="writing-canvas" class="w-full h-64 rounded-xl mb-4"></canvas>
-                        <div class="flex gap-2">
-                            <button onclick="clearCanvas()" class="flex-1 bg-gray-100 py-3 rounded-xl font-bold text-gray-500">Clear</button>
-                            <button onclick="triggerWin('Beautiful handwriting!')" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold card-shadow" style="box-shadow: 0 4px 0 #cc7700;">Submit</button>
+                    `;
+                    break;
+                case 'reading':
+                    html = `
+                        <div class="bg-white p-8 rounded-3xl card-shadow text-center relative animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            ${helpBtn}
+                            <div class="text-[#1cb0f6] font-black mb-6 uppercase tracking-widest text-sm">Read & Match</div>
+                            <div class="mb-10 p-6 bg-blue-50 rounded-2xl border-2 border-blue-100">
+                                <h2 class="devanagari text-6xl font-bold text-gray-800">${currentWord.hindi}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 gap-4">
+                                ${generateMultipleChoice(currentWord.english).map(opt => `
+                                    <button onclick="checkAnswer('${opt}', '${currentWord.english}')" class="p-4 rounded-2xl border-2 border-gray-200 hover:border-[#1cb0f6] hover:bg-[#f0f9ff] font-bold text-gray-700 btn-bounce text-xl card-shadow bg-white">${opt}</button>
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-                initCanvas();
-            } else if (currentTab === 'speaking') {
-                container.innerHTML = `
-                    <div class="bg-white p-8 rounded-3xl card-shadow text-center relative">
-                        ${helpBtn}
-                        <div class="text-blue-500 font-black mb-4 uppercase tracking-widest text-sm">Pronounce it!</div>
-                        <div class="mb-8">
-                            <h2 class="devanagari text-6xl font-bold text-gray-800">${currentWord.hindi}</h2>
-                            <p class="text-gray-400 font-mono text-xl">${currentWord.roman}</p>
+                    `;
+                    break;
+                case 'writing':
+                    html = `
+                        <div class="bg-white p-6 rounded-3xl card-shadow text-center relative animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            ${helpBtn}
+                            <div class="text-[#ff9600] font-black mb-4 uppercase tracking-widest text-sm">Trace the word</div>
+                            <h2 class="devanagari text-5xl font-bold mb-4 text-gray-800">${currentWord.hindi}</h2>
+                            <canvas id="writing-canvas" class="w-full h-64 mb-4"></canvas>
+                            <div class="flex gap-3">
+                                <button onclick="clearCanvas()" class="flex-1 bg-gray-100 py-4 rounded-2xl font-black text-gray-500 border-b-4 border-gray-300 active:border-b-0 active:translate-y-1">CLEAR</button>
+                                <button onclick="triggerWin('Amazing Writing!')" class="flex-1 bg-[#ff9600] text-white py-4 rounded-2xl font-black text-xl border-b-4 border-[#cc7700] active:border-b-0 active:translate-y-1">SUBMIT</button>
+                            </div>
                         </div>
-                        <button id="mic-btn" onclick="startRecognition('${currentWord.hindi}')" class="w-24 h-24 bg-blue-500 text-white rounded-full mx-auto flex items-center justify-center shadow-lg btn-bounce">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                        </button>
-                        <p id="mic-status" class="mt-4 text-gray-500 font-bold">Tap to speak</p>
-                    </div>
-                `;
+                    `;
+                    setTimeout(initCanvas, 50);
+                    break;
+                case 'speaking':
+                    html = `
+                        <div class="bg-white p-8 rounded-3xl card-shadow text-center relative animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            ${helpBtn}
+                            <div class="text-[#ce82ff] font-black mb-6 uppercase tracking-widest text-sm">Speak loudly!</div>
+                            <div class="mb-10">
+                                <h2 class="devanagari text-6xl font-bold text-gray-800">${currentWord.hindi}</h2>
+                                <p class="text-gray-400 font-bold text-xl mt-3 tracking-widest">${currentWord.roman}</p>
+                            </div>
+                            <button id="mic-btn" onclick="startRecognition('${currentWord.hindi}')" class="w-28 h-28 bg-[#ce82ff] text-white rounded-full mx-auto flex items-center justify-center shadow-xl border-b-8 border-[#a350e0] active:border-b-0 active:translate-y-2 transition-all btn-bounce">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                            </button>
+                            <p id="mic-status" class="mt-6 text-gray-400 font-black uppercase tracking-tighter">Tap the mic to start</p>
+                        </div>
+                    `;
+                    break;
+            }
+            container.innerHTML = html;
+        }
+
+        // Logic to ensure 1 correct answer always
+        function generateMultipleChoice(correct) {
+            // 1. Get all English meanings EXCEPT the correct one
+            let distractors = wordLibrary
+                .map(w => w.english)
+                .filter(e => e !== correct);
+            
+            // 2. Shuffle distractors and pick 3
+            distractors = distractors.sort(() => Math.random() - 0.5).slice(0, 3);
+            
+            // 3. Combine with correct answer
+            let choices = [correct, ...distractors];
+            
+            // 4. Final shuffle so correct answer isn't always at index 0
+            return choices.sort(() => Math.random() - 0.5);
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                triggerWin();
+            } else {
+                showToast(`Not quite! That means something else. 😅`);
+                // Briefly shake the button could be added here
             }
         }
 
-        // Help System
+        function triggerWin(msg = "Correct! You got it!") {
+            gems += 20;
+            streak += 1;
+            document.getElementById('gems-count').innerText = gems;
+            document.getElementById('streak-count').innerText = streak;
+            
+            const modal = document.getElementById('feedback-modal');
+            const panel = document.getElementById('modal-panel');
+            document.getElementById('modal-desc').innerText = msg;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                panel.classList.remove('translate-y-full');
+            }, 10);
+            
+            playSuccessSound();
+        }
+
+        // Canvas Implementation
+        let canvas, ctx, drawing = false;
+        function initCanvas() {
+            canvas = document.getElementById('writing-canvas');
+            if(!canvas) return;
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#444';
+
+            const getPos = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            };
+
+            const start = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
+            const end = () => { drawing = false; };
+            const move = (e) => {
+                if (!drawing) return;
+                e.preventDefault();
+                const p = getPos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            };
+
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('touchstart', start, { passive: false });
+            window.addEventListener('mouseup', end);
+            window.addEventListener('touchend', end);
+            canvas.addEventListener('mousemove', move);
+            canvas.addEventListener('touchmove', move, { passive: false });
+        }
+
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        // Speech Recognition
+        function startRecognition(target) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showToast("Oops! Microphone not supported on this browser.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'hi-IN';
+            const micBtn = document.getElementById('mic-btn');
+            const micStatus = document.getElementById('mic-status');
+
+            micBtn.classList.remove('bg-[#ce82ff]');
+            micBtn.classList.add('bg-red-500', 'pulse');
+            micStatus.innerText = "Listening now...";
+
+            recognition.onresult = (event) => {
+                const result = event.results[0][0].transcript;
+                // Simple partial match logic
+                if (result.toLowerCase().includes(target.toLowerCase()) || target.toLowerCase().includes(result.toLowerCase())) {
+                    triggerWin(`You said "${result}"! Spot on!`);
+                } else {
+                    showToast(`You said "${result}". Try again!`);
+                }
+            };
+
+            recognition.onerror = () => {
+                showToast("I couldn't hear you. Check your mic!");
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.add('bg-[#ce82ff]');
+                micBtn.classList.remove('bg-red-500', 'pulse');
+                micStatus.innerText = "Tap the mic to try again";
+            };
+
+            recognition.start();
+        }
+
+        // Help Modal Logic
         function showHelp(word) {
             const helpModal = document.getElementById('help-modal');
             const helpContent = document.getElementById('help-content');
             
             helpContent.innerHTML = `
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-sm font-black text-gray-400 uppercase">Meaning</p>
-                        <p class="text-lg text-gray-700 font-bold">${word.definition}</p>
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-2xl">
+                        <p class="text-xs font-black text-gray-400 uppercase mb-1">What it means</p>
+                        <p class="text-xl text-gray-800 font-bold leading-tight">${word.definition}</p>
                     </div>
-                    <div>
-                        <p class="text-sm font-black text-gray-400 uppercase">How to say it</p>
-                        <p class="text-lg text-gray-700 font-bold italic">"${word.pronunciation}"</p>
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                        <p class="text-xs font-black text-blue-400 uppercase mb-1">How to say it</p>
+                        <p class="text-xl text-blue-700 font-bold italic tracking-wide">"${word.pronunciation}"</p>
                     </div>
-                    <button onclick="speak('${word.hindi}')" class="flex items-center gap-2 text-blue-500 font-bold">
-                        <span class="bg-blue-100 p-2 rounded-full">🔊</span> Hear again
+                    <button onclick="speak('${word.hindi}')" class="w-full flex items-center justify-center gap-3 bg-blue-100 text-blue-600 p-4 rounded-2xl font-black hover:bg-blue-200 transition-colors">
+                        <span class="text-2xl">🔊</span> HEAR AUDIO
                     </button>
                 </div>
             `;
@@ -302,132 +463,45 @@
             document.getElementById('help-modal').classList.remove('flex');
         }
 
-        // Mechanics
-        function shuffleOptions(correct) {
-            let options = [correct, "Failure", "Laziness", "Confusion", "Boredom"];
-            return options.sort(() => Math.random() - 0.5).slice(0, 4);
-        }
-
-        function checkAnswer(selected, correct) {
-            if (selected === correct) {
-                triggerWin();
-            } else {
-                showToast("Try again! (फिर से कोशिश करें)");
-            }
-        }
-
-        function triggerWin(msg = "Sahi hai! (Correct!)") {
-            gems += 10;
-            document.getElementById('gems-count').innerText = gems;
-            showModal("🎉", "Perfect!", msg);
-            playSuccessSound();
-        }
-
-        // Canvas Logic
-        let canvas, ctx, drawing = false;
-        function initCanvas() {
-            canvas = document.getElementById('writing-canvas');
-            if(!canvas) return;
-            ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            ctx.lineWidth = 6;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#333';
-
-            const getPos = (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                return { x: clientX - rect.left, y: clientY - rect.top };
-            };
-
-            const start = (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
-            const end = () => { drawing = false; };
-            const move = (e) => {
-                if (!drawing) return;
-                const p = getPos(e);
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-            };
-
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('touchstart', start);
-            window.addEventListener('mouseup', end);
-            window.addEventListener('touchend', end);
-            canvas.addEventListener('mousemove', move);
-            canvas.addEventListener('touchmove', move);
-        }
-
-        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-
-        // Voice Logic
-        function startRecognition(target) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                showToast("Speech not supported on this browser.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'hi-IN';
-            const micBtn = document.getElementById('mic-btn');
-            const micStatus = document.getElementById('mic-status');
-
-            micBtn.classList.add('bg-red-500');
-            micStatus.innerText = "Listening...";
-
-            recognition.onresult = (event) => {
-                const result = event.results[0][0].transcript;
-                if (result.includes(target) || target.includes(result)) {
-                    triggerWin(`You said it perfectly!`);
-                } else {
-                    showToast(`Sounded like: ${result}. Try again!`);
-                }
-            };
-
-            recognition.onend = () => {
-                micBtn.classList.remove('bg-red-500');
-                micStatus.innerText = "Tap to speak again";
-            };
-
-            recognition.start();
-        }
-
-        // Feedback UI
-        function showModal(icon, title, desc) {
-            const modal = document.getElementById('feedback-modal');
-            document.getElementById('modal-icon').innerText = icon;
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-desc').innerText = desc;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
+        // Global UI Helpers
         function closeModal() {
-            document.getElementById('feedback-modal').classList.add('hidden');
-            document.getElementById('feedback-modal').classList.remove('flex');
-            nextExercise();
+            const modal = document.getElementById('feedback-modal');
+            const panel = document.getElementById('modal-panel');
+            panel.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                nextExercise();
+            }, 300);
         }
 
         function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
             const toast = document.createElement('div');
-            toast.className = "fixed top-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-2xl z-[300] font-bold shadow-xl";
+            toast.className = "toast fixed top-24 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded-2xl z-[300] font-bold shadow-2xl animate-bounce";
             toast.innerText = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         function playSuccessSound() {
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const osc = context.createOscillator();
             const gain = context.createGain();
+            
+            osc.type = 'sine';
             osc.frequency.setValueAtTime(523.25, context.currentTime); // C5
-            osc.frequency.exponentialRampToValueAtTime(1046.50, context.currentTime + 0.1); // C6
-            gain.gain.setValueAtTime(0.1, context.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
-            osc.connect(gain); gain.connect(context.destination);
-            osc.start(); osc.stop(context.currentTime + 0.3);
+            osc.frequency.exponentialRampToValueAtTime(880, context.currentTime + 0.1); // A5
+            
+            gain.gain.setValueAtTime(0.2, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+            
+            osc.connect(gain);
+            gain.connect(context.destination);
+            osc.start();
+            osc.stop(context.currentTime + 0.5);
         }
 
         window.onload = () => switchTab('listening');
